@@ -21,6 +21,33 @@ public class HelloWorldClient {
         System.out.println( helloResponse.getText() );
         channel.shutdown();
 
+        Hello.WarehouseRecord request = Hello.WarehouseRecord.newBuilder()
+                .setWarehouseID("WH-01")
+                .setWarehouseName("Main Warehouse")
+                .setTimestamp("2026-04-13")
+                .addProductDataList(
+                        Hello.ProductData.newBuilder()
+                                .setProductId(1)
+                                .setProductName("Laptop")
+                                .setProductCategory("Electronics")
+                                .setQuantity(5)
+                                .setPrice(999.99)
+                                .build()
+                )
+                .addProductDataList(
+                        Hello.ProductData.newBuilder()
+                                .setProductId(2)
+                                .setProductName("Mouse")
+                                .setProductCategory("Accessories")
+                                .setQuantity(20)
+                                .setPrice(19.99)
+                                .build()
+                )
+                .build();
+
+        Hello.HelloResponse response = stub.sendWarehouse(request);
+
+        System.out.println(response.getText());
     }
 
 }

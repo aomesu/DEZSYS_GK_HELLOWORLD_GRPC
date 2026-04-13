@@ -31,7 +31,7 @@ Start HelloWorldClient (Java)
 
 ## Changes
 
-In the Proto File I added 
+In the Proto File I added a methode that takes a WarehouseRecord and returns a HelloResponse.
 
 ```protobuf
 service HelloWorldService {
@@ -40,16 +40,104 @@ service HelloWorldService {
 }
 ```
 
+`ProductData` defines a Product and `WarehouseRecord` defines a Warehouse Record from the exercise MidEng 7.1.
 
-    service HelloWorldService { 
-        rpc hello(HelloRequest) returns (HelloResponse) {} 
-        rpc sendWarehouse(WarehouseRecord) returns (HelloResponse) {}
+```protobuf
+message ProductData {
+  int32 productId = 1;
+  string productName = 2;
+  string productCategory = 3;
+  int32 quantity = 4;
+  double price = 5;
+}
+
+message WarehouseRecord {
+  string warehouseID = 1;
+  string warehouseName = 2;
+  string timestamp = 3;
+  repeated ProductData productDataList = 4;
+}
+```
+
+
+
+The service implementation (`HelloWorldServiceImpl`) handles incoming `sendWarehouse` RPC calls by processing the received `WarehouseRecord`, including warehouse metadata and a list of products. It logs the received data, iterates through the product list, and returns a confirmation response to the client.
+
+```protobuf
+@Override
+public void sendWarehouse(Hello.WarehouseRecord request,
+                          StreamObserver<Hello.HelloResponse> responseObserver) {
+
+    System.out.println("Warehouse received:");
+    System.out.println("ID: " + request.getWarehouseID());
+    System.out.println("Name: " + request.getWarehouseName());
+    System.out.println("Timestamp: " + request.getTimestamp());
+
+    for (Hello.ProductData p : request.getProductDataListList()) {
+        System.out.println("Product: " + p.getProductName()
+                + " | qty: " + p.getQuantity()
+                + " | price: " + p.getPrice());
     }
 
-## Problems
+    Hello.HelloResponse response = Hello.HelloResponse.newBuilder()
+            .setText("Warehouse data received")
+            .build();
 
-After I first started the application, a error occured
+    responseObserver.onNext(response);
+    responseObserver.onCompleted();
+}
+```
 
- 
+
+
+The Client creates a `WarehouseRecord` object containing warehouse metadata and a list of `ProductData` entries. This object is then sent to the server via the new gRPC method `sendWarehouse`, and the server’s response is printed to the console.
+
+```protobuf
+Hello.WarehouseRecord request = Hello.WarehouseRecord.newBuilder()
+        .setWarehouseID("WH-01")
+        .setWarehouseName("Main Warehouse")
+        .setTimestamp("2026-04-13")
+        .addProductDataList(
+                Hello.ProductData.newBuilder()
+                        .setProductId(1)
+                        .setProductName("Laptop")
+                        .setProductCategory("Electronics")
+                        .setQuantity(5)
+                        .setPrice(999.99)
+                        .build()
+        )
+        .addProductDataList(
+                Hello.ProductData.newBuilder()
+                        .setProductId(2)
+                        .setProductName("Mouse")
+                        .setProductCategory("Accessories")
+                        .setQuantity(20)
+                        .setPrice(19.99)
+                        .build()
+        )
+        .build();
+
+Hello.HelloResponse response = stub.sendWarehouse(request);
+
+System.out.println(response.getText());
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
