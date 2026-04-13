@@ -14,4 +14,27 @@ public class HelloWorldServiceImpl extends HelloWorldServiceGrpc.HelloWorldServi
         responseObserver.onCompleted();
 
     }
+
+    @Override
+    public void sendWarehouse(Hello.WarehouseRecord request,
+                              StreamObserver<Hello.HelloResponse> responseObserver) {
+
+        System.out.println("Warehouse received:");
+        System.out.println("ID: " + request.getWarehouseID());
+        System.out.println("Name: " + request.getWarehouseName());
+        System.out.println("Timestamp: " + request.getTimestamp());
+
+        for (Hello.ProductData p : request.getProductDataListList()) {
+            System.out.println("Product: " + p.getProductName()
+                    + " | qty: " + p.getQuantity()
+                    + " | price: " + p.getPrice());
+        }
+
+        Hello.HelloResponse response = Hello.HelloResponse.newBuilder()
+                .setText("Warehouse data received")
+                .build();
+
+        responseObserver.onNext(response);
+        responseObserver.onCompleted();
+    }
 }
