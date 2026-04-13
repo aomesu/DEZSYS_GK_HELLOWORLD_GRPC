@@ -122,22 +122,6 @@ Hello.HelloResponse response = stub.sendWarehouse(request);
 System.out.println(response.getText());
 ```
 
+output nachdem ausführen des clients:
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+```pr

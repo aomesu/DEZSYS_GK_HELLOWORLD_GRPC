@@ -19,7 +19,6 @@ public class HelloWorldClient {
                 .setLastname(lastname)
                 .build());
         System.out.println( helloResponse.getText() );
-        channel.shutdown();
 
         Hello.WarehouseRecord request = Hello.WarehouseRecord.newBuilder()
                 .setWarehouseID("WH-01")
@@ -48,6 +47,7 @@ public class HelloWorldClient {
         Hello.HelloResponse response = stub.sendWarehouse(request);
 
         System.out.println(response.getText());
+        channel.shutdown();
     }
 
 }
